@@ -1,0 +1,60 @@
+# .github/workflows/deploy.yml
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main # Запускать при пуше в ветку main
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to server via SSH
+        uses: appleboy/ssh-action@v0.1.5
+        with:
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            # Переходим в папку проекта (создаем если нет)
+            cd /home/${{ secrets.SERVER_USER }}/my_django_sensor || (mkdir /home/${{ secrets.SERVER_USER }}/my_django_sensor && cd /home/${{ secrets.SERVER_USER }}/my_django_sensor)
+
+            # Инициализируем git, если это первый раз
+            if [ ! -d ".git" ]; then
+              git clone https://github.com/serejhaaa/plant_monitoring.git
+            else
+              git pull origin main
+            fi
+
+            # Создаем/обновляем виртуальное окружение
+            if [ ! -d "venv" ]; then
+              python3 -m venv venv
+            fi
+            source venv/bin/activate
+
+            # Устанавливаем зависимости
+            pip install -r requirements.txt
+
+            # Создаем .env файл для секретов
+            cat > .env <<EOF
+            SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}
+            DB_NAME=sensor_db
+            DB_USER=sensor_user
+            DB_PASSWORD=${{ secrets.DB_PASSWORD }}
+            DB_HOST=localhost
+            DB_PORT=5432
+            EOF
+
+            # Применяем миграции БД
+            python manage.py makemigrations
+            python manage.py migrate
+
+            # Собираем статические файлы
+            python manage.py collectstatic --noinput
+
+            # Перезапускаем Gunicorn (настроим в следующем шаге)
+            sudo systemctl restart gunicorn
