@@ -23,18 +23,25 @@ jobs:
             # Включаем режим, при котором скрипт прерывается при любой ошибке
             set -e
             
-            # Переходим в папку проекта
-            cd /home/${{ secrets.SERVER_USER }}/my_django_sensor
+            # Переходим в домашнюю директорию пользователя
+            cd /home/${{ secrets.SERVER_USER }}
             
-            # Если папка существует, обновляем код. Если нет - клонируем.
-            if [ -d ".git" ]; then
-              echo "Repository exists. Pulling latest changes..."
-              git fetch origin
-              git reset --hard origin/main # Принудительно обновляем до состояния ветки main
-            else
-              echo "Repository does not exist. Cloning..."
-              git clone https://github.com/serejhaaa/plant_monitoring.git .
+            # Создаем папку проекта, если она еще не существует.
+            # Флаг -p не выдаст ошибку, если папка уже есть.
+            mkdir -p my_django_sensor
+            cd my_django_sensor
+            
+            # Если это еще не git-репозиторий, делаем его им
+            if [ ! -d ".git" ]; then
+              echo "Initializing git repository..."
+              git init
+              git remote add origin https://github.com/serejhaaa/plant_monitoring.git
             fi
+            
+            # Теперь в любом случае обновляем код до состояния ветки main
+            echo "Pulling latest changes from main branch..."
+            git fetch origin main
+            git reset --hard origin/main
             
             # Создаем/обновляем виртуальное окружение
             if [ ! -d "venv" ]; then
