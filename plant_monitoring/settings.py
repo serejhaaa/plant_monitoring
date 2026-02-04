@@ -62,4 +62,9 @@ TEMPLATES = [
 # Наш секретный токен для авторизации
 SECRET_TOKEN = os.getenv('SECRET_TOKEN', 'my-super-secret-default-token')
 
+# Настройки статических файлов
+STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
+STATICFILES_DIRS = []
+
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
