@@ -11,7 +11,7 @@ BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-default-key-for-dev')
 DEBUG = os.getenv('DEBUG', 'False') == 'True'
 ALLOWED_HOSTS = ['192.168.2.100', 'localhost', '127.0.0.1']
-
+ROOT_URLCONF = 'plant_monitoring.urls'
 
 # === ПРИЛОЖЕНИЯ И ПРОМЕЖУТОЧНОЕ ПО ===
 INSTALLED_APPS = [
