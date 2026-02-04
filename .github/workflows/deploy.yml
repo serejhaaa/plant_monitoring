@@ -20,26 +20,35 @@ jobs:
           username: ${{ secrets.SERVER_USER }}
           key: ${{ secrets.SSH_PRIVATE_KEY }}
           script: |
-            # Переходим в папку проекта (создаем если нет)
-            cd /home/${{ secrets.SERVER_USER }}/my_django_sensor || (mkdir /home/${{ secrets.SERVER_USER }}/my_django_sensor && cd /home/${{ secrets.SERVER_USER }}/my_django_sensor)
-
-            # Инициализируем git, если это первый раз
-            if [ ! -d ".git" ]; then
-              git clone https://github.com/serejhaaa/plant_monitoring.git
+            # Включаем режим, при котором скрипт прерывается при любой ошибке
+            set -e
+            
+            # Переходим в папку проекта
+            cd /home/${{ secrets.SERVER_USER }}/my_django_sensor
+            
+            # Если папка существует, обновляем код. Если нет - клонируем.
+            if [ -d ".git" ]; then
+              echo "Repository exists. Pulling latest changes..."
+              git fetch origin
+              git reset --hard origin/main # Принудительно обновляем до состояния ветки main
             else
-              git pull origin main
+              echo "Repository does not exist. Cloning..."
+              git clone https://github.com/ВАШ_НИК/ВАШ_РЕПОЗИТОРИЙ.git .
             fi
-
+            
             # Создаем/обновляем виртуальное окружение
             if [ ! -d "venv" ]; then
+              echo "Creating virtual environment..."
               python3 -m venv venv
             fi
             source venv/bin/activate
-
-            # Устанавливаем зависимости
+            
+            # Устанавливаем/обновляем зависимости
+            echo "Installing requirements..."
             pip install -r requirements.txt
-
-            # Создаем .env файл для секретов
+            
+            # Создаем/обновляем .env файл для секретов
+            echo "Configuring environment variables..."
             cat > .env <<EOF
             SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}
             DB_NAME=sensor_db
@@ -48,13 +57,18 @@ jobs:
             DB_HOST=localhost
             DB_PORT=5432
             EOF
-
+            
             # Применяем миграции БД
+            echo "Applying database migrations..."
             python manage.py makemigrations
             python manage.py migrate
-
+            
             # Собираем статические файлы
+            echo "Collecting static files..."
             python manage.py collectstatic --noinput
-
-            # Перезапускаем Gunicorn (настроим в следующем шаге)
+            
+            # Перезапускаем Gunicorn
+            echo "Restarting Gunicorn..."
             sudo systemctl restart gunicorn
+            
+            echo "Deployment finished successfully!"
