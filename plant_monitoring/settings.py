@@ -1,37 +1,29 @@
-# plant_monitoring/settings.py
+# config/settings.py
 
 import os
 from dotenv import load_dotenv
 
-# Загружаем переменные из файла .env
 load_dotenv()
 
-# ... (остальные настройки)
+# === ОСНОВНЫЕ НАСТРОЙКИ ПРОЕКТА ===
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
+SECRET_KEY = os.getenv('DJANGO_SECRET_KEY', 'django-insecure-default-key-for-dev')
+DEBUG = os.getenv('DEBUG', 'False') == 'True'
+ALLOWED_HOSTS = ['192.168.2.100', 'localhost', '127.0.0.1']
+
+
+# === ПРИЛОЖЕНИЯ И ПРОМЕЖУТОЧНОЕ ПО ===
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
-    'django.contrib.staticfiles',  # <-- УБЕДИТЕСЬ, ЧТО ЭТА СТРОКА ЕСТЬ
+    'django.contrib.staticfiles',
     'rest_framework',
     'sensor.apps.SensorConfig',
 ]
-
-# ... (остальные настройки)
-
-# Настройки БД через переменные окружения
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'sensor_db'),
-        'USER': os.getenv('DB_USER', 'sensor_user'),
-        'PASSWORD': os.getenv('DB_PASSWORD'),
-        'HOST': os.getenv('DB_HOST', 'localhost'),
-        'PORT': os.getenv('DB_PORT', '5432'),
-    }
-}
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -43,6 +35,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
 
+ROOT_URLCONF = 'config.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
@@ -58,13 +51,28 @@ TEMPLATES = [
         },
     },
 ]
+WSGI_APPLICATION = 'config.wsgi.application'
 
-# Наш секретный токен для авторизации
-SECRET_TOKEN = os.getenv('SECRET_TOKEN', 'my-super-secret-default-token')
 
-# Настройки статических файлов
+# === БАЗА ДАННЫХ ===
+DATABASES = {
+    'default': {
+        'ENGINE': 'django.db.backends.postgresql',
+        'NAME': os.getenv('DB_NAME', 'sensor_db'),
+        'USER': os.getenv('DB_USER', 'sensor_user'),
+        'PASSWORD': os.getenv('DB_PASSWORD'),
+        'HOST': os.getenv('DB_HOST', 'localhost'),
+        'PORT': os.getenv('DB_PORT', '5432'),
+    }
+}
+
+
+# === СТАТИЧЕСКИЕ ФАЙЛЫ ===
 STATIC_URL = '/static/'
 STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATICFILES_DIRS = []
 
+
+# === ПРОЧЕЕ ===
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+SECRET_TOKEN = os.getenv('SECRET_TOKEN', 'my-super-secret-default-token')
