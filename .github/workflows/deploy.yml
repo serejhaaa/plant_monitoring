@@ -74,6 +74,24 @@ jobs:
             echo "Collecting static files..."
             python3 manage.py collectstatic --noinput
             
+            cat > /etc/systemd/system/gunicorn.service <<EOF
+            [Unit]
+            Description=gunicorn daemon for my_django_sensor
+            After=network.target
+            
+            [Service]
+            User=deployer
+            Group=www-data
+            WorkingDirectory=/home/deployer/my_django_sensor
+            ExecStart=/home/deployer/my_django_sensor/venv/bin/gunicorn \
+                      --workers 3 \
+                      --bind unix:/home/deployer/my_django_sensor/gunicorn.sock \
+                      plant_monitoring.wsgi:application # <--- ИСПРАВЛЕНА
+            
+            [Install]
+            WantedBy=multi-user.target
+            EOF
+            
             # Перезапускаем Gunicorn
             echo "Restarting Gunicorn..."
             sudo systemctl restart gunicorn
