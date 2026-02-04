@@ -9,9 +9,14 @@ load_dotenv()
 # ... (остальные настройки)
 
 INSTALLED_APPS = [
-    # ...
+    'django.contrib.admin',
+    'django.contrib.auth',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',  # <-- УБЕДИТЕСЬ, ЧТО ЭТА СТРОКА ЕСТЬ
     'rest_framework',
-    'sensor.apps.SensorConfig', # Добавляем наше приложение
+    'sensor.apps.SensorConfig',
 ]
 
 # ... (остальные настройки)
