@@ -67,12 +67,12 @@ jobs:
             
             # Применяем миграции БД
             echo "Applying database migrations..."
-            python manage.py makemigrations
-            python manage.py migrate
+            python3 manage.py makemigrations
+            python3 manage.py migrate
             
             # Собираем статические файлы
             echo "Collecting static files..."
-            python manage.py collectstatic --noinput
+            python3 manage.py collectstatic --noinput
             
             # Перезапускаем Gunicorn
             echo "Restarting Gunicorn..."
