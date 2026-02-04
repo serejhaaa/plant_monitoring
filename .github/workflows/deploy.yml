@@ -33,7 +33,7 @@ jobs:
               git reset --hard origin/main # Принудительно обновляем до состояния ветки main
             else
               echo "Repository does not exist. Cloning..."
-              git clone https://github.com/ВАШ_НИК/ВАШ_РЕПОЗИТОРИЙ.git .
+              git clone https://github.com/serejhaaa/plant_monitoring.git .
             fi
             
             # Создаем/обновляем виртуальное окружение
