@@ -5,6 +5,7 @@ from rest_framework import status
 from django.conf import settings
 from .models import Measurement
 
+
 @api_view(['POST'])
 def add_measurement(request):
     # 1. Авторизация по токену в заголовке
