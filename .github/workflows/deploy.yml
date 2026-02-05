@@ -79,7 +79,7 @@ jobs:
             
             # Создаем/перезаписываем файл сервиса Gunicorn с правами суперпользователя
             echo "Creating Gunicorn service file..."
-            sudo cat > /etc/systemd/system/gunicorn.service <<EOF
+            sudo tee /etc/systemd/system/gunicorn.service > /dev/null <<EOF
             [Unit]
             Description=gunicorn daemon for my_django_sensor
             After=network.target
