@@ -61,7 +61,7 @@ jobs:
             echo "Configuring environment variables..."
             cat > .env <<EOF
             SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}
-            DB_NAME=sensor_db
+            DB_NAME=plant_monitoring
             DB_USER=sensor_user
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_HOST=localhost
