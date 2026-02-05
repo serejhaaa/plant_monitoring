@@ -27,8 +27,8 @@ jobs:
             cd /home/${{ secrets.SERVER_USER }}
             
             # Создаем папку проекта, если она еще не существует.
-            mkdir -p my_django_sensor
-            cd my_django_sensor
+            mkdir -p plant_monitoring
+            cd plant_monitoring
             
             # Если это еще не git-репозиторий, делаем его им
             if [ ! -d ".git" ]; then
