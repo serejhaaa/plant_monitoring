@@ -60,7 +60,7 @@ TEMPLATES = [
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql',
-        'NAME': os.getenv('DB_NAME', 'sensor_db'),
+        'NAME': os.getenv('DB_NAME', 'plant_monitoring'),
         'USER': os.getenv('DB_USER', 'sensor_user'),
         'PASSWORD': os.getenv('DB_PASSWORD'),
         'HOST': os.getenv('DB_HOST', 'localhost'),
