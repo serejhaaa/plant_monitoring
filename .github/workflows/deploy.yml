@@ -27,7 +27,6 @@ jobs:
             cd /home/${{ secrets.SERVER_USER }}
             
             # Создаем папку проекта, если она еще не существует.
-            # Флаг -p не выдаст ошибку, если папка уже есть.
             mkdir -p my_django_sensor
             cd my_django_sensor
             
@@ -35,10 +34,10 @@ jobs:
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
               git init
-              git remote add origin https://github.com/serejhaaa/plant_monitoring.git
+              git remote add origin https://github.com/ВАШ_НИК/ВАШ_РЕПОЗИТОРИЙ.git
             fi
             
-            # Теперь в любом случае обновляем код до состояния ветки main
+            # Обновляем код до состояния ветки main
             echo "Pulling latest changes from main branch..."
             git fetch origin main
             git reset --hard origin/main
@@ -50,7 +49,11 @@ jobs:
             fi
             source venv/bin/activate
             
-            # Устанавливаем/обновляем зависимости
+            # Сначала обновляем pip и setuptools до последних версий
+            echo "Upgrading pip and setuptools..."
+            pip install --upgrade pip setuptools
+            
+            # Устанавливаем/обновляем зависимости проекта
             echo "Installing requirements..."
             pip install -r requirements.txt
             
@@ -58,7 +61,7 @@ jobs:
             echo "Configuring environment variables..."
             cat > .env <<EOF
             SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}
-            DB_NAME=plant_monitoring
+            DB_NAME=sensor_db
             DB_USER=sensor_user
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
             DB_HOST=localhost
@@ -74,7 +77,9 @@ jobs:
             echo "Collecting static files..."
             python3 manage.py collectstatic --noinput
             
-            cat > /etc/systemd/system/gunicorn.service <<EOF
+            # Создаем/перезаписываем файл сервиса Gunicorn с правами суперпользователя
+            echo "Creating Gunicorn service file..."
+            sudo cat > /etc/systemd/system/gunicorn.service <<EOF
             [Unit]
             Description=gunicorn daemon for my_django_sensor
             After=network.target
@@ -86,11 +91,14 @@ jobs:
             ExecStart=/home/deployer/my_django_sensor/venv/bin/gunicorn \
                       --workers 3 \
                       --bind unix:/home/deployer/my_django_sensor/gunicorn.sock \
-                      plant_monitoring.wsgi:application # <--- ИСПРАВЛЕНА
+                      plant_monitoring.wsgi:application
             
             [Install]
             WantedBy=multi-user.target
             EOF
+            
+            # Перезагружаем systemd, чтобы он увидел новый/измененный файл сервиса
+            sudo systemctl daemon-reload
             
             # Перезапускаем Gunicorn
             echo "Restarting Gunicorn..."
