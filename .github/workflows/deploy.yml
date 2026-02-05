@@ -35,7 +35,7 @@ jobs:
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
               git init
-              git remote add origin https://github.com/ВАШ_НИК/ВАШ_РЕПОЗИТОРИЙ.git
+              git remote add origin https://github.com/serejhaaa/plant_monitoring.git
             fi
             
             # Обновляем код до состояния ветки main
