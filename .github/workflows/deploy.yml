@@ -91,9 +91,9 @@ jobs:
             User=deployer
             Group=www-data
             WorkingDirectory=/home/deployer/my_django_sensor
-            ExecStart=/home/deployer/my_django_sensor/venv/bin/gunicorn \
+            ExecStart=/home/deployer/plant_monitoring/venv/bin/gunicorn \
                       --workers 3 \
-                      --bind unix:/home/deployer/my_django_sensor/gunicorn.sock \
+                      --bind unix:/home/deployer/plant_monitoring/gunicorn.sock \
                       plant_monitoring.wsgi:application
             
             [Install]
