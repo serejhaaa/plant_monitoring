@@ -93,6 +93,7 @@ jobs:
             WorkingDirectory=/home/plant-deployer/plant_monitoring
             ExecStart=/home/plant-deployer/plant_monitoring/venv/bin/gunicorn \
                       --workers 3 \
+                      --group www-data \
                       --bind unix:/home/plant-deployer/plant_monitoring/gunicorn.sock \
                       plant_monitoring.wsgi:application
             
