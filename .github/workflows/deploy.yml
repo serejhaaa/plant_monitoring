@@ -34,9 +34,11 @@ jobs:
             # Если это еще не git-репозиторий, делаем его им
             if [ ! -d ".git" ]; then
               echo "Initializing git repository..."
-              git init
-              git remote add origin ${{ secrets.REPO_URL }}
+              git init              
             fi            
+            
+            echo "Setting remote origin URL..."
+            git remote set-url origin https://github.com/serejhaaa/plant_monitoring.git
             
             # Обновляем код до состояния ветки main
             echo "Pulling latest changes from main branch..."
