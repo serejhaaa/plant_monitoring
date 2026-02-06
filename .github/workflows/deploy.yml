@@ -90,7 +90,7 @@ jobs:
             [Service]
             User=plant-deployer
             Group=www-data
-            WorkingDirectory=/home/plant-deployer/my_django_sensor
+            WorkingDirectory=/home/plant-deployer/plant_monitoring
             ExecStart=/home/plant-deployer/plant_monitoring/venv/bin/gunicorn \
                       --workers 3 \
                       --bind unix:/home/plant-deployer/plant_monitoring/gunicorn.sock \
