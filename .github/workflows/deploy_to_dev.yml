@@ -1,13 +1,13 @@
-# .github/workflows/deploy.yml
-name: Deploy to VPS
+name: DEV Deploy to VPS
 
 on:
   push:
     branches:
-      - main # Запускать при пуше в ветку main!!
+      - dev # Запускать при пуше в ветку dev!!
 
 jobs:
   deploy:
+    environment: dev
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
@@ -64,11 +64,11 @@ jobs:
             echo "Configuring environment variables..."
             cat > .env <<EOF
             SECRET_TOKEN=${{ secrets.SECRET_TOKEN }}
-            DB_NAME=plant_monitoring
-            DB_USER=sensor_user
+            DB_NAME=${{ secrets.DB_NAME }}
+            DB_USER=${{ secrets.DB_USER }}
             DB_PASSWORD=${{ secrets.DB_PASSWORD }}
-            DB_HOST=localhost
-            DB_PORT=5432
+            DB_HOST=${{ secrets.DB_HOST }}
+            DB_PORT=${{ secrets.DB_PORT }}
             EOF
             
             # Применяем миграции БД
