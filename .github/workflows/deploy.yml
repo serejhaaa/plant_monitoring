@@ -54,11 +54,11 @@ jobs:
             
             # Сначала обновляем pip и setuptools до последних версий
             echo "Upgrading pip and setuptools..."
-            pip install --upgrade pip setuptools
+            /home/plant-deployer/plant_monitoring/venv/bin/pip install --upgrade pip setuptools
             
             # Устанавливаем/обновляем зависимости проекта
             echo "Installing requirements..."
-            pip install -r requirements.txt
+            home/plant-deployer/plant_monitoring/venv/bin/pip install -r requirements.txt
             
             # Создаем/обновляем .env файл для секретов
             echo "Configuring environment variables..."
