@@ -36,7 +36,7 @@ jobs:
               echo "Initializing git repository..."
               git init
               git remote add origin https://github.com/serejhaaa/plant_monitoring.git
-            fi
+            fi            
             
             # Обновляем код до состояния ветки main
             echo "Pulling latest changes from main branch..."
