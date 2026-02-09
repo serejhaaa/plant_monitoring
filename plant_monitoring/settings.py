@@ -68,6 +68,17 @@ DATABASES = {
     }
 }
 
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        # ... ваши классы аутентификации
+    ],
+    'DEFAULT_PARSER_CLASSES': [
+        'rest_framework.parsers.JSONParser', # <--- Этот парсер отвечает за JSON
+        'rest_framework.parsers.FormParser',
+        'rest_framework.parsers.MultiPartParser',
+    ]
+}
+
 
 # === СТАТИЧЕСКИЕ ФАЙЛЫ ===
 STATIC_URL = '/static/'
