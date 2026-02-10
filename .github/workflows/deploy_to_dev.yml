@@ -24,6 +24,44 @@ jobs:
             # Включаем режим, при котором скрипт прерывается при любой ошибке
             set -e
             
+            # --- БЛОК 1: Настройка сервера и PostgreSQL (только для локальной БД) ---
+            # Сохраняем секреты в переменные для удобства
+            DB_HOST="${{ secrets.DB_HOST }}"
+            DB_NAME="${{ secrets.DB_NAME }}"
+            DB_USER="${{ secrets.DB_USER }}"
+            DB_PASSWORD="${{ secrets.DB_PASSWORD }}"
+
+            # Проверяем, используется ли локальный хост для БД
+            if [[ "$DB_HOST" == "127.0.0.1" ]] || [[ "$DB_HOST" == "localhost" ]]; then
+              echo "DB_HOST is local. Checking PostgreSQL setup..."
+
+              # 1. Обновление системных пакетов
+              echo "Updating system packages..."
+              sudo DEBIAN_FRONTEND=noninteractive apt-get update
+              sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+
+              # 2. Проверка и установка PostgreSQL
+              if ! command -v psql &> /dev/null; then
+                echo "PostgreSQL is not installed. Installing..."
+                sudo apt-get install -y postgresql postgresql-contrib
+              else
+                echo "PostgreSQL is already installed."
+              fi
+
+              # 3. Проверка и создание пользователя PostgreSQL
+              USER_EXISTS=$(sudo -u postgres psql -tAc "SELECT 1 FROM pg_roles WHERE rolname='$DB_USER'")
+              if [[ -z "$USER_EXISTS" ]]; then
+                echo "Creating PostgreSQL user '$DB_USER'..."
+                sudo -u postgres createuser "$DB_USER"
+              fi
+              # Устанавливаем/обновляем пароль для пользователя.
+              echo "Setting password for user '$DB_USER'..."
+              sudo -u postgres psql -c "ALTER USER \"$DB_USER\" WITH PASSWORD '$DB_PASSWORD';"
+            else
+              echo "DB_HOST is remote. Skipping local PostgreSQL setup."
+            fi
+            # --- КОНЕЦ БЛОКА 1 ---
+
             # Переходим в домашнюю директорию пользователя
             cd /home/${{ secrets.SERVER_USER }}
             
@@ -59,6 +97,41 @@ jobs:
             # Устанавливаем/обновляем зависимости проекта
             echo "Installing requirements..."
             /home/plant-deployer/plant_monitoring/venv/bin/pip install -r requirements.txt
+            
+            # --- БЛОК 2: Универсальная проверка и создание БД ---
+            echo "Checking for database '$DB_NAME'..."
+            DB_EXISTS=false
+
+            if [[ "$DB_HOST" == "127.0.0.1" ]] || [[ "$DB_HOST" == "localhost" ]]; then
+              # Локальная проверка: запрос к системной таблице postgres
+              if sudo -u postgres psql -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1; then
+                DB_EXISTS=true
+              fi
+            else
+              # Удаленная проверка: попытка подключения к БД
+              echo "Performing remote database check..."
+              export PGPASSWORD="$DB_PASSWORD"
+              if psql -h "$DB_HOST" -p "$DB_PORT" -U "$DB_USER" -d "$DB_NAME" -c "SELECT 1;" &> /dev/null; then
+                DB_EXISTS=true
+              fi
+              unset PGPASSWORD
+            fi
+
+            if [ "$DB_EXISTS" = false ]; then
+              echo "Database '$DB_NAME' does not exist."
+              if [[ "$DB_HOST" == "127.0.0.1" ]] || [[ "$DB_HOST" == "localhost" ]]; then
+                echo "Attempting to create local database..."
+                sudo -u postgres createdb -O "$DB_USER" "$DB_NAME"
+                echo "Database '$DB_NAME' created successfully."
+              else
+                echo "ERROR: Remote database '$DB_NAME' does not exist and cannot be created automatically."
+                echo "Please create it manually on the remote server and re-run the deployment."
+                exit 1
+              fi
+            else
+              echo "Database '$DB_NAME' exists."
+            fi
+            # --- КОНЕЦ БЛОКА 2 ---
             
             # Создаем/обновляем .env файл для секретов
             echo "Configuring environment variables..."
