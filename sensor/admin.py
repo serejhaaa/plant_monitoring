@@ -22,7 +22,7 @@ class SensorAdmin(admin.ModelAdmin):
 
 @admin.register(Measurement)
 class MeasurementAdmin(admin.ModelAdmin):
-    list_display = ('id', 'timestamp', 'value')
+    list_display = ('id', 'timestamp', 'sensor', 'value')
     list_filter = ('timestamp',)
     search_fields = ('value',)
     ordering = ('-timestamp',)
