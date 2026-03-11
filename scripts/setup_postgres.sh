@@ -19,17 +19,16 @@ psql -v ON_ERROR_STOP=1 <<EOSQL
       RAISE NOTICE 'User $DB_USER exists, password updated';
     END IF;
   END \$\$;
-
-  DO \$\$
-  BEGIN
-    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = '$DB_NAME') THEN
-      EXECUTE format('CREATE DATABASE %I OWNER %I', '$DB_NAME', '$DB_USER');
-      RAISE NOTICE 'Database $DB_NAME created';
-    ELSE
-      RAISE NOTICE 'Database $DB_NAME already exists';
-    END IF;
-  END \$\$;
-  GRANT ALL PRIVILEGES ON DATABASE "$DB_NAME" TO "$DB_USER";
 EOSQL
+
+# CREATE DATABASE нельзя выполнять внутри функции — делаем отдельной командой
+if ! psql -tAc "SELECT 1 FROM pg_database WHERE datname='$DB_NAME'" | grep -q 1; then
+  psql -v ON_ERROR_STOP=1 -c "CREATE DATABASE \"$DB_NAME\" OWNER \"$DB_USER\";"
+  echo "Database $DB_NAME created"
+else
+  echo "Database $DB_NAME already exists"
+fi
+
+psql -v ON_ERROR_STOP=1 -c "GRANT ALL PRIVILEGES ON DATABASE \"$DB_NAME\" TO \"$DB_USER\";"
 
 echo "Done. Database '$DB_NAME' and user '$DB_USER' ready."
