@@ -17,7 +17,8 @@ def _check_token(request):
     return None
 
 
-class TokenAuthentication(BasePermission):
+class AdminTokenAuthentication(BasePermission):
+    """Секретный токен (SECRET_TOKEN) для create/edit/delete плат и сенсоров."""
     def has_permission(self, request, view):
         token = request.headers.get('X-SECRET-TOKEN')
         if token != settings.SECRET_TOKEN:
@@ -28,7 +29,7 @@ class TokenAuthentication(BasePermission):
 class BoardViewSet(viewsets.ModelViewSet):
     """CRUD для плат. Создание/обновление с вложенными сенсорами."""
     queryset = Board.objects.prefetch_related('sensors').all()
-    permission_classes = [TokenAuthentication]
+    permission_classes = [AdminTokenAuthentication]
 
     def get_serializer_class(self):
         if self.action in ('create', 'update', 'partial_update'):
@@ -40,7 +41,7 @@ class SensorViewSet(viewsets.ModelViewSet):
     """CRUD для сенсоров."""
     queryset = Sensor.objects.select_related('board').all()
     serializer_class = SensorSerializer
-    permission_classes = [TokenAuthentication]
+    permission_classes = [AdminTokenAuthentication]
 
 
 @api_view(['GET'])
@@ -100,7 +101,7 @@ def add_measurement(request):
 @api_view(['POST'])
 def add_board_measurements(request):
     """
-    Отправка измерений платой. Авторизация по токену платы (X-SECRET-TOKEN).
+    Отправка измерений платой. Авторизация по токену карты в заголовке X-SECRET-TOKEN.
     Тело: [{"sensor_uuid": "uuid", "value": 31.5}, ...]
     Если хотя бы один sensor_uuid принадлежит другой плате — 400, но валидные записываются.
     """

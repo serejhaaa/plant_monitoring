@@ -1,5 +1,10 @@
+import secrets
 from rest_framework import serializers
 from .models import Board, Sensor, SensorType
+
+
+def generate_board_token():
+    return secrets.token_hex(64)  # 128 hex-символов
 
 
 class SensorSerializer(serializers.ModelSerializer):
@@ -40,19 +45,21 @@ class BoardSerializer(serializers.ModelSerializer):
 
 
 class BoardCreateUpdateSerializer(serializers.ModelSerializer):
-    """Сериализатор с возможностью создания платы вместе с сенсорами."""
+    """Сериализатор с возможностью создания платы вместе с сенсорами. Токен генерируется автоматически."""
     sensors = SensorWriteSerializer(many=True, required=False)
+    secret_token = serializers.CharField(read_only=True)
 
     class Meta:
         model = Board
         fields = ['id', 'name', 'secret_token', 'sensors']
-        read_only_fields = ['id']
+        read_only_fields = ['id', 'secret_token']
 
     def to_representation(self, instance):
         return BoardSerializer(instance).data
 
     def create(self, validated_data):
         sensors_data = validated_data.pop('sensors', [])
+        validated_data['secret_token'] = generate_board_token()
         board = Board.objects.create(**validated_data)
         for s in sensors_data:
             Sensor.objects.create(board=board, sensor_type=s['sensor_type'])
@@ -60,8 +67,8 @@ class BoardCreateUpdateSerializer(serializers.ModelSerializer):
 
     def update(self, instance, validated_data):
         sensors_data = validated_data.pop('sensors', None)
+        validated_data.pop('secret_token', None)  # Токен неизменяем
         instance.name = validated_data.get('name', instance.name)
-        instance.secret_token = validated_data.get('secret_token', instance.secret_token)
         instance.save()
 
         if sensors_data is not None:
