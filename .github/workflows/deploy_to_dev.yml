@@ -36,9 +36,9 @@ jobs:
               echo "DB_HOST is local. Checking PostgreSQL setup..."
 
               # 1. Обновление системных пакетов
-              echo "Updating system packages..."
-              sudo DEBIAN_FRONTEND=noninteractive apt-get update
-              sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+#              echo "Updating system packages..."
+#              sudo DEBIAN_FRONTEND=noninteractive apt-get update
+#              sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
               # 2. Проверка и установка PostgreSQL
               if ! command -v psql &> /dev/null; then
@@ -78,10 +78,10 @@ jobs:
             echo "Setting remote origin URL..."
             git remote set-url origin https://github.com/serejhaaa/plant_monitoring.git
             
-            # Обновляем код до состояния ветки main
-            echo "Pulling latest changes from main branch..."
-            git fetch origin main
-            git reset --hard origin/main
+            # Обновляем код до состояния ветки dev
+            echo "Pulling latest changes from dev branch..."
+            git fetch origin dev
+            git reset --hard origin/dev
             
             # Создаем/обновляем виртуальное окружение
             if [ ! -d "venv" ]; then
