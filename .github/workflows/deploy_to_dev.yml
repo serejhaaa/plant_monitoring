@@ -11,10 +11,10 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v3
 
       - name: Deploy to server via SSH
-        uses: appleboy/ssh-action@v1.0.3
+        uses: appleboy/ssh-action@v0.1.5
         with:
           host: ${{ secrets.SERVER_HOST }}
           port: ${{ secrets.SERVER_PORT }}
@@ -36,9 +36,9 @@ jobs:
               echo "DB_HOST is local. Checking PostgreSQL setup..."
 
               # 1. Обновление системных пакетов
-#              echo "Updating system packages..."
-#              sudo DEBIAN_FRONTEND=noninteractive apt-get update
-#              sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
+              # echo "Updating system packages..."
+              # sudo DEBIAN_FRONTEND=noninteractive apt-get update
+              # sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -y
 
               # 2. Проверка и установка PostgreSQL
               if ! command -v psql &> /dev/null; then
