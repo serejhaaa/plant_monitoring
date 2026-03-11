@@ -12,6 +12,7 @@ class Board(models.Model):
         return f"{self.name} ({self.id})"
 
     class Meta:
+        db_table = 'board'
         ordering = ['name']
 
 
@@ -30,6 +31,7 @@ class Sensor(models.Model):
         return f"{self.get_sensor_type_display()} on {self.board.name}"
 
     class Meta:
+        db_table = 'sensor'
         ordering = ['board', 'sensor_type']
 
 
