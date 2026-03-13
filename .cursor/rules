@@ -18,3 +18,6 @@
 - IDs — UUID везде (Board, Sensor)
 - Конфиг в .env, не в коде
 - Миграции в sensor/migrations/
+
+## Документация
+- Любые правки в коде сопровождать актуализацией документации (README, docs/PROJECT_SUMMARY.md, docstrings, firmware/README.md — в зависимости от изменений)
