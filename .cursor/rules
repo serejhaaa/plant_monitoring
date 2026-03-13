@@ -21,3 +21,8 @@
 
 ## Документация
 - Любые правки в коде сопровождать актуализацией документации (README, docs/PROJECT_SUMMARY.md, docstrings, firmware/README.md — в зависимости от изменений)
+
+## Тесты
+- При изменении моделей, views, API, сериализаторов — обновлять или дополнять тесты в sensor/tests.py
+- Новые эндпоинты и поведение API должны быть покрыты тестами
+- Перед коммитом запускать: `python manage.py test sensor --settings=plant_monitoring.test_settings`

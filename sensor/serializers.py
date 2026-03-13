@@ -84,10 +84,15 @@ class SensorSerializer(serializers.ModelSerializer):
 
 class SensorCreateUpdateSerializer(serializers.ModelSerializer):
     sensor_model = SensorModelSerializer(read_only=True)
+    sensor_model_id = serializers.PrimaryKeyRelatedField(
+        queryset=SensorModel.objects.all(),
+        source='sensor_model',
+        write_only=True
+    )
 
     class Meta:
         model = Sensor
-        fields = ['id', 'board', 'sensor_model', 'config']
+        fields = ['id', 'board', 'sensor_model', 'sensor_model_id', 'config']
 
 
 class SensorWriteSerializer(serializers.ModelSerializer):
