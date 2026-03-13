@@ -1,0 +1,7 @@
+{
+  "wifi_ssid": "",
+  "wifi_password": "",
+  "api_url": "http://192.168.2.100",
+  "board_name": "",
+  "measure_interval_sec": 60
+}
