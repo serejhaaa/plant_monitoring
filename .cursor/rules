@@ -1,0 +1,20 @@
+# Plant Monitoring — Правила проекта
+
+## Инструментарий
+
+### Backend
+- **Python** — основной язык
+- **Django** — веб-фреймворк
+- **Django REST Framework** — API
+- **PostgreSQL** — БД
+- **Gunicorn** — WSGI-сервер
+- **python-dotenv** — переменные окружения
+
+### Прошивка устройств
+- **MicroPython** — интерпретатор на ESP32
+- **ESP32** — целевая платформа
+
+## Соглашения
+- IDs — UUID везде (Board, Sensor)
+- Конфиг в .env, не в коде
+- Миграции в sensor/migrations/
