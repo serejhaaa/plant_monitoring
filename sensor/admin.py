@@ -1,5 +1,28 @@
 from django.contrib import admin
-from .models import Board, Sensor, Measurement
+from .models import (
+    MeasurementType,
+    Board,
+    SensorModel,
+    SensorModelMeasurementType,
+    Sensor,
+    Measurement,
+)
+
+
+@admin.register(MeasurementType)
+class MeasurementTypeAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+
+
+class SensorModelMeasurementTypeInline(admin.TabularInline):
+    model = SensorModelMeasurementType
+    extra = 0
+
+
+@admin.register(SensorModel)
+class SensorModelAdmin(admin.ModelAdmin):
+    list_display = ('id', 'name')
+    inlines = [SensorModelMeasurementTypeInline]
 
 
 class SensorInline(admin.TabularInline):
@@ -9,20 +32,18 @@ class SensorInline(admin.TabularInline):
 
 @admin.register(Board)
 class BoardAdmin(admin.ModelAdmin):
-    list_display = ('id', 'name')
+    list_display = ('id', 'name', 'serial_number', 'is_activated')
     inlines = [SensorInline]
 
 
 @admin.register(Sensor)
 class SensorAdmin(admin.ModelAdmin):
-    list_display = ('id', 'board', 'sensor_type')
-    list_filter = ('sensor_type',)
-    list_select_related = ('board',)
+    list_display = ('id', 'board', 'sensor_model')
+    list_select_related = ('board', 'sensor_model')
 
 
 @admin.register(Measurement)
 class MeasurementAdmin(admin.ModelAdmin):
-    list_display = ('id', 'timestamp', 'sensor', 'value')
+    list_display = ('id', 'timestamp', 'sensor', 'measurement_type', 'value')
     list_filter = ('timestamp',)
-    search_fields = ('value',)
-    ordering = ('-timestamp',)
+    list_select_related = ('sensor', 'measurement_type')

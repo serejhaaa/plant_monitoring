@@ -24,19 +24,22 @@ docs/                 # Документация
 
 ## Модели (sensor app)
 
-| Модель      | Таблица  | Описание |
-|-------------|----------|----------|
-| Board       | board    | Плата (id UUID, name, secret_token 128 символов) |
-| Sensor      | sensor   | Датчик (board FK, sensor_type: air_temp, air_humidity, soil_humidity) |
-| Measurement | sensor_measurement | Показание (value, sensor FK, timestamp) |
+| Модель                   | Таблица                      | Описание |
+|--------------------------|------------------------------|----------|
+| MeasurementType          | measurement_type             | Тип измерения (id, name) |
+| Board                    | board                        | Плата (id, name, secret_token, serial_number, rgb_config JSON, is_activated) |
+| SensorModel              | sensor_model                 | Модель датчика (name, description, default_config JSON, M2M measurement_types) |
+| SensorModelMeasurementType | sensor_model_measurement_type | Связь SensorModel ↔ MeasurementType |
+| Sensor                   | sensor                       | Датчик (board, sensor_model, config JSON) |
+| Measurement              | sensor_measurement           | Показание (value, sensor, measurement_type) |
 
 ## API
 
-- **CRUD плат и сенсоров** — `X-SECRET-TOKEN` (глобальный admin токен из .env)
-- **Отправка измерений платой** — `POST /api/board/measure/`, токен платы в заголовке
-- **Типы сенсоров:** air_temp, air_humidity, soil_humidity
+- **CRUD** (boards, sensors, sensor-models, measurement-types) — `X-SECRET-TOKEN` (admin)
+- **Конфиг платы** — `GET /api/board/config/<serial_number>/` без авторизации. Возвращает конфиг только при is_activated=False, затем ставит is_activated=True
+- **Отправка измерений** — `POST /api/board/measure/`, токен платы в заголовке. Тело: `[{"sensor_uuid","measurement_type_uuid","value"},...]`
 
-Эндпоинты: `/api/boards/`, `/api/sensors/`, `/api/board/measure/`, `/api/measurements/`.
+Эндпоинты: `/api/boards/`, `/api/sensors/`, `/api/sensor-models/`, `/api/measurement-types/`, `/api/board/config/<sn>/`, `/api/board/measure/`, `/api/measurements/`
 
 ## Прошивка ESP32
 

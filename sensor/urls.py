@@ -6,9 +6,12 @@ from . import views
 router = DefaultRouter()
 router.register(r'api/boards', views.BoardViewSet, basename='board')
 router.register(r'api/sensors', views.SensorViewSet, basename='sensor')
+router.register(r'api/sensor-models', views.SensorModelViewSet, basename='sensor-model')
+router.register(r'api/measurement-types', views.MeasurementTypeViewSet, basename='measurement-type')
 
 urlpatterns = [
     path('', include(router.urls)),
+    path('api/board/config/<str:serial_number>/', views.board_config, name='board_config'),
     path('api/measure/', views.add_measurement, name='add_measurement'),
     path('api/board/measure/', views.add_board_measurements, name='add_board_measurements'),
     path('api/measurements/', views.list_measurements, name='list_measurements'),
