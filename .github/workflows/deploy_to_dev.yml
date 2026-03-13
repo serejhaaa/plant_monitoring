@@ -74,9 +74,8 @@ jobs:
             DB_PORT=${{ secrets.DB_PORT }}
             EOF
             
-            # Применяем миграции БД
+            # Применяем миграции БД (миграции создаются локально, не на сервере)
             echo "Applying database migrations..."
-            python3 manage.py makemigrations
             python3 manage.py migrate
             
             # Собираем статические файлы
