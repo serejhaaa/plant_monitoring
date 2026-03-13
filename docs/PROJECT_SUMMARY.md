@@ -55,4 +55,4 @@ docs/                 # Документация
 
 ## Деплой
 
-Push в ветку dev → GitHub Actions → VPS (Gunicorn, nginx). БД создаётся вручную через `scripts/setup_postgres.sh`. Папка `firmware/` исключается при деплое (удаляется на сервере после git pull).
+Push в ветку dev → GitHub Actions → VPS (Gunicorn, nginx). БД создаётся вручную через `scripts/setup_postgres.sh`. Папка `firmware/` исключается при деплое. Миграции создаются локально (makemigrations не запускается на сервере).
