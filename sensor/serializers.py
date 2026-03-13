@@ -16,7 +16,7 @@ def generate_board_token():
 class MeasurementTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = MeasurementType
-        fields = ['id', 'name']
+        fields = ['id', 'name', 'code']
 
 
 class SensorModelMeasurementTypeSerializer(serializers.ModelSerializer):

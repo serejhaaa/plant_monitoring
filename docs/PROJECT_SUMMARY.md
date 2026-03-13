@@ -26,7 +26,7 @@ docs/                 # Документация
 
 | Модель                   | Таблица                      | Описание |
 |--------------------------|------------------------------|----------|
-| MeasurementType          | measurement_type             | Тип измерения (id, name) |
+| MeasurementType          | measurement_type             | Тип измерения (id, name, code) |
 | Board                    | board                        | Плата (id, name, secret_token, serial_number, rgb_config JSON, is_activated) |
 | SensorModel              | sensor_model                 | Модель датчика (name, description, default_config JSON, M2M measurement_types) |
 | SensorModelMeasurementType | sensor_model_measurement_type | Связь SensorModel ↔ MeasurementType |
@@ -55,4 +55,4 @@ docs/                 # Документация
 
 ## Деплой
 
-Push в ветку dev → GitHub Actions → VPS (Gunicorn, nginx). БД создаётся вручную через `scripts/setup_postgres.sh`.
+Push в ветку dev → GitHub Actions → VPS (Gunicorn, nginx). БД создаётся вручную через `scripts/setup_postgres.sh`. Папка `firmware/` исключается при деплое (удаляется на сервере после git pull).

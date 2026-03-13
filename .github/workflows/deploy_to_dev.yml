@@ -44,7 +44,10 @@ jobs:
             echo "Pulling latest changes from dev branch..."
             git fetch origin dev
             git reset --hard origin/dev
-            
+
+            # Удаляем папки, не нужные на сервере (остаются в репозитории)
+            rm -rf firmware
+
             # Создаем/обновляем виртуальное окружение
             if [ ! -d "venv" ]; then
               echo "Creating virtual environment..."
